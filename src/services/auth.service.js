@@ -5,7 +5,7 @@ const { verifyHash } = require("../utils/verifyHash");
 const { createToken } = require("../utils/createToken");
 
 const registerUser = async (userData) => {
-  let { name, email, password, confirmPassword } = userData;
+  let { name, email, password, confirmPassword, seller, products } = userData;
   // remove whitespaces from input data
   name = name.trim();
   email = email.trim();
@@ -35,6 +35,8 @@ const registerUser = async (userData) => {
       name,
       email,
       password: hashedPassword,
+      seller,
+      products,
     },
   });
 

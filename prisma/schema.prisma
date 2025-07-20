@@ -8,13 +8,30 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @db.VarChar(60)
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  name      String    @db.VarChar(60)
+  email     String    @unique
   password  String
+  seller    Boolean   @default(false)
+  products  Product[]
   token     String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(60)
+  description String?  @db.Text
+  price       Decimal  @db.Decimal(10, 2)
+  isAvailable Boolean  @default(true)
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  userId      Int      @map("owner_id")
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("products")
 }

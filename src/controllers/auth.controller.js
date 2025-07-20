@@ -1,7 +1,7 @@
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 const { registerUser, authenticateUser } = require("../services/auth.service");
 
-exports.SignIn = asyncErrorHandler(async (req, res, next) => {
+exports.signIn = asyncErrorHandler(async (req, res, next) => {
   const data = req.body;
 
   const newUser = await registerUser(data);
@@ -12,7 +12,7 @@ exports.SignIn = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-exports.Login = asyncErrorHandler(async (req, res, next) => {
+exports.login = asyncErrorHandler(async (req, res, next) => {
   const userData = req.body;
 
   const { token, authenticatedUser } = await authenticateUser(userData);
@@ -21,11 +21,25 @@ exports.Login = asyncErrorHandler(async (req, res, next) => {
     httpOnly: true,
     secure: false,
     maxAge: 86400000,
+    sameSite: "none",
   });
 
   return res.status(200).json({
     success: true,
     message: "login successfull",
     authenticatedUser,
+  });
+});
+
+exports.logout = asyncErrorHandler(async (req, res, next) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "none",
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "logged out successfully",
   });
 });
