@@ -42,3 +42,61 @@ exports.getProducts = async () => {
   });
   return products;
 };
+
+exports.updateProduct = async (productId, updateData) => {
+  if (updateData.title && typeof updateData.title !== "string") {
+    throw new AppError("Title must be a string", 400);
+  }
+  if (updateData.title && !updateData.title.trim()) {
+    throw new AppError("Product name can't be empty", 400);
+  }
+  if (updateData.description && typeof updateData.description !== "string") {
+    throw new AppError("description must be a string", 400);
+  }
+  if (updateData.description && !updateData.description.trim()) {
+    throw new AppError("Product name can't be empty", 400);
+  }
+  if (
+    updateData.price !== undefined &&
+    (typeof updateData.price !== "number" || updateData.price < 0)
+  ) {
+    throw new AppError("Price must be a non-negative number", 400);
+  }
+  if (
+    updateData.quantity !== undefined &&
+    (typeof updateData.quantity !== "number" || updateData.quantity < 0)
+  ) {
+    throw new AppError("Quantity must be a non-negative number", 400);
+  }
+  if (
+    updateData.isAvailable !== undefined &&
+    typeof updateData.isAvailable !== "boolean"
+  ) {
+    throw new AppError("isAvailable must be a boolean", 400);
+  }
+
+  const updatedProduct = await prisma.product.update({
+    where: { id: productId },
+    data: { ...updateData },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    omit: {
+      userId: true,
+    },
+  });
+
+  return updatedProduct;
+};
+
+exports.dropProduct = async (productId) => {
+  await prisma.product.delete({
+    where: { id: productId },
+  });
+  return { message: "Product deleted successfully" };
+};

@@ -1,4 +1,9 @@
-const { saveProduct, getProducts } = require("../services/product.service");
+const {
+  saveProduct,
+  getProducts,
+  updateProduct,
+  dropProduct,
+} = require("../services/product.service");
 const asyncErrorHandler = require("../utils/asyncErrorHandler");
 
 exports.createProduct = asyncErrorHandler(async (req, res, next) => {
@@ -22,13 +27,22 @@ exports.getAllProducts = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
-exports.updateProduct = asyncErrorHandler(async (req, res, next) => {
+exports.updateProductData = asyncErrorHandler(async (req, res, next) => {
   const updateData = req.body;
-  const productId = req.params.id;
-  const updated = await reviseProduct(productId, updateData);
+  const productId = parseInt(req.params.id);
+  const updated = await updateProduct(productId, updateData);
   return res.status(200).json({
-    success: false,
+    success: true,
     message: "product updated successfully",
     updatedData: updated,
+  });
+});
+
+exports.deleteProduct = asyncErrorHandler(async (req, res, next) => {
+  const productId = parseInt(req.params.id);
+  await dropProduct(productId);
+  return res.status(200).json({
+    success: true,
+    message: "product deleted successfully!",
   });
 });
